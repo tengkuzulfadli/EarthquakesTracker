@@ -12,6 +12,7 @@ struct GeoJSON: Decodable {
     private enum RootCodingKeys: String, CodingKey {
         case features
     }
+
     private enum FeatureCodingKeys: String, CodingKey {
         case properties
     }

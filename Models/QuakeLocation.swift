@@ -11,7 +11,6 @@ struct QuakeLocation: Decodable {
     var latitude: Double { properties.products.origin.first!.properties.latitude }
     var longitude: Double { properties.products.origin.first!.properties.longitude }
     private var properties: RootProperties
-    
     struct RootProperties: Decodable {
         var products: Products
     }
@@ -32,7 +31,6 @@ extension QuakeLocation.OriginProperties: Decodable {
         case latitude
         case longitude
     }
-    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OriginPropertiesCodingKeys.self)
         let longitude = try container.decode(String.self, forKey: .longitude)
@@ -42,5 +40,4 @@ extension QuakeLocation.OriginProperties: Decodable {
         self.longitude = longitude
         self.latitude = latitude
     }
-    
 }
