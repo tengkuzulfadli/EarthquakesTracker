@@ -9,14 +9,13 @@ import Foundation
 
 actor QuakeClient {
     private let quakeCache: NSCache<NSString, CacheEntryObject> = NSCache()
-
+    /// Geological data provided by the U.S. Geological Survey (USGS). See ACKNOWLEDGMENTS.txt for additional details.
+    private let feedURL = URL(string: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson")!
     private lazy var decoder: JSONDecoder = {
         let aDecoder = JSONDecoder()
         aDecoder.dateDecodingStrategy = .millisecondsSince1970
         return aDecoder
     }()
-
-    private let feedURL = URL(string: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson")!
 
     private let downloader: any HTTPDataDownloader
 
@@ -47,10 +46,11 @@ actor QuakeClient {
             return updatedQuakes
         }
     }
-    init(downloader: HTTPDataDownloader) {
+
+    init(downloader: any HTTPDataDownloader = URLSession.shared) {
         self.downloader = downloader
     }
-    
+
     func quakeLocation(from url: URL) async throws -> QuakeLocation {
         if let cached = quakeCache[url] {
             switch cached {
@@ -66,7 +66,6 @@ actor QuakeClient {
             return location
         }
         quakeCache[url] = .inProgress(task)
-        
         do {
             let location = try await task.value
             quakeCache[url] = .ready(location)
@@ -75,6 +74,5 @@ actor QuakeClient {
             quakeCache[url] = nil
             throw error
         }
-        
     }
 }
